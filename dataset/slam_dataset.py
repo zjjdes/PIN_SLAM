@@ -77,7 +77,7 @@ class SLAMDataset(Dataset):
             if config.pc_path != "":
                 from natsort import natsorted
                 # sort files as 1, 2,… 9, 10 not 1, 10, 100 with natsort
-                self.pc_filenames = natsorted(os.listdir(config.pc_path))    
+                self.pc_filenames = natsorted([f for f in os.listdir(config.pc_path) if f.split('.')[0] != ''])    
                 self.total_pc_count_in_folder = len(self.pc_filenames)
                 config.end_frame = min(config.end_frame, self.total_pc_count_in_folder)
                 self.pc_filenames = self.pc_filenames[config.begin_frame:config.end_frame:config.every_frame]
@@ -279,6 +279,17 @@ class SLAMDataset(Dataset):
                         print("Ouster-128 point cloud deskewed")
                     self.cur_point_ts_torch = (
                         (torch.floor(torch.arange(128 * 1024) / 128) / 1024)
+                        .reshape(-1, 1)
+                        .to(self.cur_point_cloud_torch)
+                    )
+                # DZ: deskewing for Ouster 128 * 2048
+                elif (
+                    self.cur_point_cloud_torch.shape[0] == 128 * 2048
+                ):  # for Ouster 128-beam LiDAR at 2048
+                    if not self.silence:
+                        print("Ouster-128 [2048] point cloud deskewed")
+                    self.cur_point_ts_torch = (
+                        (torch.floor(torch.arange(128 * 2048) / 128) / 2048)
                         .reshape(-1, 1)
                         .to(self.cur_point_cloud_torch)
                     )
@@ -955,8 +966,16 @@ def read_point_cloud(
             # print(intensity)
             points = np.hstack((points, intensity))
     elif ".pcd" in filename:  # currently cannot be readed by o3d.t.io
-        pc_load = o3d.io.read_point_cloud(filename)
-        points = np.asarray(pc_load.points, dtype=np.float64)
+        # DZ: Ouster PCD files
+        data = np.loadtxt(filename, skiprows=10)
+        points = data[:, :4] # including intensity
+
+        # # DZ: remove invalid points [DO NOT remove points to enable deskewing]
+        # mask = np.all(points[:, :3] == 0, axis=1)
+        # points = points[~mask]
+
+        # pc_load = o3d.io.read_point_cloud(filename)
+        # points = np.asarray(pc_load.points, dtype=np.float64)
         ts = None
     elif ".las" in filename:  # use laspy
         import laspy
@@ -974,7 +993,7 @@ def read_point_cloud(
             ts = None  # TODO, also read the point-wise timestamp for las point cloud
     else:
         sys.exit(
-            "The format of the imported point cloud is wrong (support only *pcd, *ply, *las and *bin)"
+            f"The format of the imported point cloud {filename} is wrong (support only *pcd, *ply, *las and *bin)"
         )
 
     # print("Loaded ", np.shape(points)[0], " points")

@@ -65,7 +65,10 @@ def vis_pin_map():
     if config.o3d_vis_on:
         vis = MapVisualizer(config)
 
-    neural_points.recreate_hash(neural_points.neural_points[0], torch.eye(3).cuda(), False, False)
+    if torch.cuda.is_available():
+        neural_points.recreate_hash(neural_points.neural_points[0], torch.eye(3).cuda(), False, False)
+    else:
+        neural_points.recreate_hash(neural_points.neural_points[0], torch.eye(3), False, False)
 
     # mesh reconstructor
     mesher = Mesher(config, neural_points, geo_mlp, sem_mlp, color_mlp)

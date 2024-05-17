@@ -44,6 +44,11 @@ def setup_experiment(config: Config, argv=None, debug_mode: bool = False):
 
     cuda_available = torch.cuda.is_available()
     if not cuda_available:
+        # # DZ: use mac gpu
+        # if torch.backends.mps.is_available():
+        #     print("Using MPS")
+        #     config.device = "mps"
+        # else:
         print("No CUDA device available, use CPU instead")
         config.device = "cpu"
 
@@ -767,7 +772,7 @@ def plot_timing_detail(time_table: np.ndarray, saving_path: str, with_loop=False
     # [label.set_fontname('Times New Roman') for label in labels]
 
     plt.xlim((0, frame_count - 1))
-    plt.ylim((0, 200))
+    # plt.ylim((0, 200))
 
     plt.xlabel("Frame ID", font2)
     plt.ylabel("Runtime (ms)", font2)

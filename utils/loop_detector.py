@@ -128,9 +128,14 @@ class NeuralPointMapContextManager:
             cur_tran_from_frame = torch.eye(4, device=self.device, dtype=torch.float64)
             cur_tran_from_frame[:3, 3] = cur_lat_tran
 
-            cur_virtual_pose = frame_pose @ torch.linalg.inv(
-                cur_tran_from_frame
-            )  # T_w<-c' = T_w<-c @ T_c<-c'
+            # cur_virtual_pose = frame_pose @ torch.linalg.inv(
+            #     cur_tran_from_frame
+            # )  # T_w<-c' = T_w<-c @ T_c<-c'
+
+            # DZ: avoid inversion, double check!!
+            cur_tran_from_frame_inv = torch.eye(4, device=self.device, dtype=torch.float64)
+            cur_tran_from_frame_inv[:3, 3] = -cur_tran_from_frame[:3, 3]
+            cur_virtual_pose = frame_pose @ cur_tran_from_frame_inv
 
             if torch.norm(cur_lat_tran) == 0:  # exact pose of this frame
                 if ptfeatures is None:
@@ -138,9 +143,16 @@ class NeuralPointMapContextManager:
                 else:
                     cur_sc_feature = self.contexts_feature[self.curr_node_idx]
             else:
+                # DZ: avoid inversion, double check!!
+                cur_virtual_pose_inv = torch.eye(4, device=self.device, dtype=torch.float64)
+                cur_virtual_pose_inv[:3, :3] = cur_virtual_pose[:3, :3].T
+                cur_virtual_pose_inv[:3, 3] = -cur_virtual_pose[:3, :3].T @ cur_virtual_pose[:3, 3]
                 ptcloud = transform_torch(
-                    ptcloud_global, torch.linalg.inv(cur_virtual_pose)
+                    ptcloud_global, cur_virtual_pose_inv
                 )
+                # ptcloud = transform_torch(
+                #     ptcloud_global, torch.linalg.inv(cur_virtual_pose)
+                # )
                 cur_sc, cur_sc_feature = ptcloud2sc_torch(
                     ptcloud, ptfeatures, self.des_shape, self.max_length
                 )

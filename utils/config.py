@@ -371,6 +371,7 @@ class Config:
             self.query_nn_k = config_args["neuralpoints"].get("query_nn_k", self.query_nn_k)
             self.num_nei_cells = config_args["neuralpoints"].get("num_nei_cells", self.num_nei_cells)
             self.search_alpha = config_args["neuralpoints"].get("search_alpha", self.search_alpha)
+            self.buffer_size = int(float(config_args["neuralpoints"].get("buffer_size", self.buffer_size)))
             self.feature_dim = config_args["neuralpoints"].get("feature_dim", self.feature_dim)
             # weighted the neighborhood feature before decoding to sdf or do the weighting of the decoded 
             # sdf afterwards, weighted first is faster, but may have some problem during the neural point map update after pgo
