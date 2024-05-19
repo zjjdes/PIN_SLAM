@@ -1,26 +1,26 @@
 setting:
   name: "ouster_128"
-  output_root: "./experiments"
+  output_root: "/media/des/T5 EVO 3/experiments"
   pc_path: "./data/route_59_14032024_down"
   # pose_path: "./data/ncd_128/quad_e/poses.txt" 
   deskew: True
 process:
-  min_range_m: 3.0 # adapt; filter too-close points (and 0 artifacts); default=2.5
+  min_range_m: 2.5 # adapt; filter too-close points (and 0 artifacts); default=2.5
   max_range_m: 80.0 # adapt; filter far-away points; default=60.0
   min_z_m: -5.0 # filter for z coordinates; default=-5.0
   vox_down_m: 0.12 # adapt; the voxel size if using voxel downsampling (unit: m); default=0.05
   adaptive_range_on: True # use an adpative range
 sampler:
-  surface_sample_range_m: 0.25 # adapt; better to be set according to the noise level (actually as the std for a gaussian distribution); default=0.25
-  surface_sample_n: 2 # adapt; default=3
+  surface_sample_range_m: 0.35 # adapt; better to be set according to the noise level (actually as the std for a gaussian distribution); default=0.25
+  surface_sample_n: 4 # adapt; default=3
   free_sample_begin_ratio: 0.5 # adapt; minimum ray distance ratio in front of the surface; default=0.3
   free_sample_end_dist_m: 1.2 # adapt; maximum distance behind the surface (unit: m); default=1.0
-  free_front_sample_n: 1  # adapt; default=2
+  free_front_sample_n: 2  # adapt; default=2
 neuralpoints:
-  voxel_size_m: 0.4 # adapt; we use the voxel hashing structure to maintain the neural points, the voxel size is set as this value; default=0.3
-  search_alpha: 0.5 # adapt; the larger this value is, the larger neighborhood region would be, the more robust to the highly dynamic motion and also the more time-consuming; default=0.2
+  voxel_size_m: 0.3 # adapt; we use the voxel hashing structure to maintain the neural points, the voxel size is set as this value; default=0.3
+  search_alpha: 1.0 # adapt; the larger this value is, the larger neighborhood region would be, the more robust to the highly dynamic motion and also the more time-consuming; default=0.2
   weighted_first: False # weighted the neighborhood feature before decoding to sdf or do the weighting of the decoded sdf afterwards
-  buffer_size: 5e7 # [adapt by VRAM] buffer size for hashing, the smaller, the more likely to collision; default=5e7
+  buffer_size: 1e6 # [adapt by VRAM] buffer size for hashing, the smaller, the more likely to collision; default=5e7
 loss:
   sigma_sigmoid_m: 0.1 # adapt; better to be set according to the noise level (used only for BCE loss as the sigmoid scale factor)
   loss_weight_on: True # if True, the weight would be given to the loss, if False, the weight would be used to change the sigmoid's shape
@@ -29,7 +29,7 @@ continual:
   batch_size_new_sample: 1000 # [adapt by VRAM] # number of the sample per batch for the current frame's data, half of all the data; default=2048
   pool_capacity: 5e6 # [adapt by VRAM]
 tracker:
-  source_vox_down_m: 1.0 # adapt; downsample voxel resolution for source point cloud; default=0.8
+  source_vox_down_m: 0.6 # adapt; downsample voxel resolution for source point cloud; default=0.8
   iter_n: 50 # maximum iteration number for registration; default=50
   valid_nn_k: 5 # adapt; during tracking, a point without nn_k neighbors would be regarded as invalid; default=6
   eigenvalue_check: False # use eigen value of Hessian matrix for degenaracy check
@@ -42,7 +42,7 @@ pgo:
   min_loop_travel_ratio: 3.0 # accumulated travel distance should be larger than this ratio * local map radius to be considered as an valid candidate; default=4.0
 optimizer: # mapper
   iters: 12 # training iterations per frame. to have a better reconstruction results, you need to set a larger iters, a smaller lr; default=12
-  batch_size: 8192 # [adapt by VRAM] batch size; default=16384
+  batch_size: 6156 # [adapt by VRAM] batch size; default=16384
   adaptive_iters: True # adptive map optimization iterations on (train for fewer iterations when there's not much new information to learn); default=False
   # ba_freq_frame: 20 # frame frequency for conducting bundle adjustment, default=0
   # lr_pose_ba: 1e-3 # # learning rate for poses during bundle adjustment; default=1e-4

@@ -967,7 +967,7 @@ def read_point_cloud(
             points = np.hstack((points, intensity))
     elif ".pcd" in filename:  # currently cannot be readed by o3d.t.io
         # DZ: Ouster PCD files
-        data = np.loadtxt(filename, skiprows=10)
+        data = np.loadtxt(filename, skiprows=10, dtype=np.float32)
         points = data[:, :4] # including intensity
 
         # # DZ: remove invalid points [DO NOT remove points to enable deskewing]
