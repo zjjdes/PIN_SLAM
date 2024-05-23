@@ -74,7 +74,6 @@ def run_pin_slam(config_path=None, dataset_name=None, sequence_name=None, seed=N
         run_path = setup_experiment(config, argv)
     else: # from args
         argv = sys.argv
-        config.load(args.config_path)
         config.use_kiss_dataloader = args.kiss_loader
         config.seed = args.seed
         config.silence = not args.log_on
@@ -82,6 +81,9 @@ def run_pin_slam(config_path=None, dataset_name=None, sequence_name=None, seed=N
         config.o3d_vis_on = args.visualize
         config.save_map = args.save_map
         config.save_mesh = args.save_mesh
+
+        # DZ: prioritise config file over command line args
+        config.load(args.config_path)
         if args.range is not None:
             config.begin_frame, config.end_frame, config.step_frame = args.range
         if args.cpu_only:
