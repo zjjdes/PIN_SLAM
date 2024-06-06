@@ -291,7 +291,7 @@ class SLAMDataset(Dataset):
                     if not self.silence:
                         print("Ouster-128 [2048] point cloud deskewed")
                     self.cur_point_ts_torch = (
-                        (torch.floor(torch.arange(128 * 2048) / 128) / 2048)
+                        (torch.floor(torch.arange(128 * 2048) / 128) / 20480) # DZ: 10 Hz?
                         .reshape(-1, 1)
                         .to(self.cur_point_cloud_torch)
                     )
@@ -979,7 +979,8 @@ def read_point_cloud(
 
         # pc_load = o3d.io.read_point_cloud(filename)
         # points = np.asarray(pc_load.points, dtype=np.float64)
-        ts = None
+
+        ts = data[:, 4] / 1e9
     elif ".las" in filename:  # use laspy
         import laspy
 
