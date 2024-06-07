@@ -658,6 +658,9 @@ def deskewing(
     # sometimes there's only partial measurements, some part are blocked by some occlussions
     min_ts = torch.min(ts)
     max_ts = torch.max(ts)
+    # DZ: Hardcoded for 10 Hz, because our data has a missing chunk
+    min_ts = 0.0
+    max_ts = 0.1
     ts = (ts - min_ts) / (max_ts - min_ts)
 
     ts -= ts_mid_pose

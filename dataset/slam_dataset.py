@@ -284,14 +284,16 @@ class SLAMDataset(Dataset):
                         .reshape(-1, 1)
                         .to(self.cur_point_cloud_torch)
                     )
-                # DZ: deskewing for Ouster 128 * 2048
+                # DZ: make up point-wise timestamps for deskewing, in case t field doesn't exist
+                # this is not used since t field exists, and this would not have worked well either
+                # because there is a missing chunk in our point clouds
                 elif (
                     self.cur_point_cloud_torch.shape[0] == 128 * 2048
                 ):  # for Ouster 128-beam LiDAR at 2048
                     if not self.silence:
                         print("Ouster-128 [2048] point cloud deskewed")
                     self.cur_point_ts_torch = (
-                        (torch.floor(torch.arange(128 * 2048) / 128) / 20480) # DZ: 10 Hz?
+                        (torch.floor(torch.arange(128 * 2048) / 128) / 2048)
                         .reshape(-1, 1)
                         .to(self.cur_point_cloud_torch)
                     )
@@ -973,13 +975,7 @@ def read_point_cloud(
         data = np.loadtxt(filename, skiprows=10, dtype=np.float32)
         points = data[:, :4] # including intensity
 
-        # # DZ: remove invalid points [DO NOT remove points to enable deskewing]
-        # mask = np.all(points[:, :3] == 0, axis=1)
-        # points = points[~mask]
-
-        # pc_load = o3d.io.read_point_cloud(filename)
-        # points = np.asarray(pc_load.points, dtype=np.float64)
-
+        # point-wise timestamps from t field
         ts = data[:, 4] / 1e9
     elif ".las" in filename:  # use laspy
         import laspy

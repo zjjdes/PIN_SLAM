@@ -1,4 +1,4 @@
-out_dir: "/data/gpfs/projects/punim2290/kissicp_results"
+out_dir: "kissicp_results"
 
 data:
     # deskew: true # use command line arg --deskew
@@ -6,11 +6,11 @@ data:
     min_range: 3.0
 
 mapping:
-    voxel_size: 0.4 # <- optional
+    # voxel_size: 0.4 # <- optional
     max_points_per_voxel: 20
 
 adaptive_threshold:
-    fixed_threshold: 0.3 # <- optional, disables adaptive threshold
+    # fixed_threshold: 0.3 # <- optional, disables adaptive threshold
     initial_threshold: 2.0
     min_motion_th: 0.1
 

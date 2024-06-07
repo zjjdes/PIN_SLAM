@@ -162,6 +162,7 @@ cython_debug/
 .DS_Store
 data/
 experiments/
+kissicp_results/
 .vscode/
 .idea/
 log.txt

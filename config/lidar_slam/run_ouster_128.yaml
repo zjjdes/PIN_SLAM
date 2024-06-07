@@ -17,8 +17,8 @@ sampler:
   free_sample_end_dist_m: 1.0 # adapt; maximum distance behind the surface (unit: m); default=1.0
   free_front_sample_n: 2  # adapt; default=2
 neuralpoints:
-  # voxel_size_m: 0.5 # adapt; we use the voxel hashing structure to maintain the neural points, the voxel size is set as this value; default=0.3
-  search_alpha: 0.5 # adapt; the larger this value is, the larger neighborhood region would be, the more robust to the highly dynamic motion and also the more time-consuming; default=0.2
+  voxel_size_m: 0.5 # adapt; we use the voxel hashing structure to maintain the neural points, the voxel size is set as this value; default=0.3
+  search_alpha: 0.8 # adapt; the larger this value is, the larger neighborhood region would be, the more robust to the highly dynamic motion and also the more time-consuming; default=0.2
   weighted_first: False # weighted the neighborhood feature before decoding to sdf or do the weighting of the decoded sdf afterwards; default=True
   # buffer_size: 5e7 # 4e6 # [adapt by VRAM] buffer size for hashing, the smaller, the more likely to collision; default=5e7
 loss:
